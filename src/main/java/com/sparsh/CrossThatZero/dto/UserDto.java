@@ -14,8 +14,6 @@ public class UserDto {
 
     private UUID id;
 
-    @NotEmpty
-    @Size(min = 4)
     private String username;
 
     @Email(message = "Email is not valid")
