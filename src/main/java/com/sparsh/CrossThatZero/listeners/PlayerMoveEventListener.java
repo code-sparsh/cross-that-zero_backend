@@ -3,11 +3,7 @@ package com.sparsh.CrossThatZero.listeners;
 import com.corundumstudio.socketio.AckRequest;
 import com.corundumstudio.socketio.SocketIOClient;
 import com.corundumstudio.socketio.SocketIOServer;
-import com.corundumstudio.socketio.annotation.OnConnect;
-import com.corundumstudio.socketio.annotation.OnDisconnect;
-import com.corundumstudio.socketio.annotation.OnEvent;
 import com.corundumstudio.socketio.listener.DataListener;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sparsh.CrossThatZero.dto.PlayerMoveDto;
 import com.sparsh.CrossThatZero.dto.RoomDto;
 import com.sparsh.CrossThatZero.model.PlayerType;
@@ -57,13 +53,6 @@ public class PlayerMoveEventListener implements DataListener<PlayerMoveDto> {
             return;
         }
 
-//        int[][] matrix = new int[3][3];
-//
-//        for (int i = 0; i < 3; i++) {
-//            System.arraycopy(array, i * 3, matrix[i], 0, 3);
-//        }
-
-//
 //        int[] array = Arrays.stream(matrix)
 //                .flatMapToInt(Arrays::stream)
 //                .toArray();
@@ -91,13 +80,23 @@ public class PlayerMoveEventListener implements DataListener<PlayerMoveDto> {
         RoomDto roomDto = modelMapper.map(room, RoomDto.class);
 
         socketIOServer.getRoomOperations(roomName).sendEvent("room", roomDto);
-        WinnerDto winnerDto = new WinnerDto();
 
-        // if it's a tie
-        if (gameValidatorService.isGameDone(board)) {
-            winnerDto.setWinner(WinnerType.TIE);
+        // if cross wins
+        if (gameValidatorService.isCrossWinner(board)) {
+            WinnerDto winnerDto = new WinnerDto(WinnerType.CROSS);
             socketIOServer.getRoomOperations(roomName).sendEvent("winner", winnerDto);
+        }
 
+        // if zero wins
+        if (gameValidatorService.isZeroWinner(board)) {
+            WinnerDto winnerDto = new WinnerDto(WinnerType.ZERO);
+            socketIOServer.getRoomOperations(roomName).sendEvent("winner", winnerDto);
+        }
+
+        // if it's a TIE
+        if (gameValidatorService.isGameDone(board)) {
+            WinnerDto winnerDto = new WinnerDto(WinnerType.TIE);
+            socketIOServer.getRoomOperations(roomName).sendEvent("winner", winnerDto);
         }
 
         System.out.println(playerMoveDto.getMove());

@@ -3,15 +3,20 @@ package com.sparsh.CrossThatZero.service;
 import com.corundumstudio.socketio.SocketIOClient;
 import com.corundumstudio.socketio.SocketIOServer;
 import com.sparsh.CrossThatZero.dto.PlayerMoveDto;
+import com.sparsh.CrossThatZero.dto.RoomDto;
 import com.sparsh.CrossThatZero.listeners.PlayerMoveEventListener;
 import com.sparsh.CrossThatZero.model.PlayerType;
 import com.sparsh.CrossThatZero.model.Room;
 import com.sparsh.CrossThatZero.repository.RoomRepository;
 import jakarta.annotation.PostConstruct;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.UUID;
 
 @Service
 public class SocketService {
@@ -22,6 +27,9 @@ public class SocketService {
 
     @Autowired
     private SocketIOServer socketIOServer;
+
+    @Autowired
+    private ModelMapper modelMapper;
 
     @Autowired
     private RoomRepository roomRepository;
@@ -41,10 +49,17 @@ public class SocketService {
                 System.out.println("This is the room" + existingRoom.get(0).getId());
                 existingRoom.get(0).setPlayerCount(2);
                 existingRoom.get(0).setCrossPlayer(userID);
-                roomRepository.save(existingRoom.get(0));
+
+                // updating the existing room and adding the second player
+                Room room = roomRepository.save(existingRoom.get(0));
 
                 String roomName = existingRoom.get(0).getId().toString();
                 client.joinRoom(roomName);
+
+                // sending the room details upon connection to indicate the client to start playing the game
+                RoomDto roomDto = modelMapper.map(room, RoomDto.class);
+                socketIOServer.getRoomOperations(roomName).sendEvent("room", roomDto);
+
                 sessionIdMapRoomName.put(client.getSessionId(), roomName);
                 sessionIdMapPlayerType.put(client.getSessionId(), PlayerType.CROSS);
                 System.out.println(client.getSessionId() + " - has joined the room: " + roomName);
@@ -52,10 +67,13 @@ public class SocketService {
                 Room room = new Room();
                 room.setZeroPlayer(userID);
                 room.setPlayerCount(1);
+
+                // creating a new room and adding the first player
                 Room storedRoom = roomRepository.save(room);
 
                 String roomName = storedRoom.getId().toString();
                 client.joinRoom(roomName);
+
                 sessionIdMapRoomName.put(client.getSessionId(), roomName);
                 sessionIdMapPlayerType.put(client.getSessionId(), PlayerType.ZERO);
                 System.out.println(client.getSessionId() + " - has joined the room: " + roomName);
