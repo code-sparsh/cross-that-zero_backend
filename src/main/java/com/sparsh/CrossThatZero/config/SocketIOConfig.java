@@ -2,9 +2,6 @@ package com.sparsh.CrossThatZero.config;
 
 import com.corundumstudio.socketio.SocketConfig;
 import com.corundumstudio.socketio.SocketIOServer;
-import com.sparsh.CrossThatZero.dto.PlayerMoveDto;
-import com.sparsh.CrossThatZero.listeners.PlayerMoveEventListener;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -18,6 +15,7 @@ public class SocketIOConfig {
 
         config.setHostname("localhost");
         config.setPort(9000);
+        config.setOrigin("http://localhost:3000");
 
         // to prevent the error - "address already in use by some other server"
         SocketConfig socketConfig = new SocketConfig();

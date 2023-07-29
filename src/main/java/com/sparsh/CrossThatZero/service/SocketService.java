@@ -3,9 +3,9 @@ package com.sparsh.CrossThatZero.service;
 import com.corundumstudio.socketio.SocketIOClient;
 import com.corundumstudio.socketio.SocketIOServer;
 import com.sparsh.CrossThatZero.dto.PlayerMoveDto;
+import com.sparsh.CrossThatZero.dto.PlayerType;
 import com.sparsh.CrossThatZero.dto.RoomDto;
 import com.sparsh.CrossThatZero.listeners.PlayerMoveEventListener;
-import com.sparsh.CrossThatZero.model.PlayerType;
 import com.sparsh.CrossThatZero.model.Room;
 import com.sparsh.CrossThatZero.repository.RoomRepository;
 import jakarta.annotation.PostConstruct;
@@ -43,6 +43,8 @@ public class SocketService {
 
             UUID sessionID = client.getSessionId();
             String userID = client.getHandshakeData().getSingleUrlParam("userID");
+
+            client.sendEvent("connected", "cconnected h vai");
 
             List<Room> existingRoom = roomRepository.findRoomsByPlayerCountOne();
             if (existingRoom.size() != 0) {

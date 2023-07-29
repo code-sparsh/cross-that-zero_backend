@@ -1,4 +1,4 @@
-package com.sparsh.CrossThatZero.model;
+package com.sparsh.CrossThatZero.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
