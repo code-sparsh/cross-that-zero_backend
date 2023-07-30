@@ -29,4 +29,8 @@ public class UserController {
         return new ResponseEntity<UserDto>(userDto1, HttpStatus.OK);
     }
 
+    @GetMapping("/test")
+    public String test() {
+        return "yes?";
+    }
 }
