@@ -27,6 +27,8 @@ jobs:
           cache: maven
 
       - name: Set environment variables
+        env:
+          PROFILE: prod
         run: |
           echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" >> $GITHUB_ENV
           echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> $GITHUB_ENV
@@ -34,8 +36,10 @@ jobs:
       - name: Build with Maven
         run: mvn clean package -DskipTests
 
-      - name: Stop existing process on port 80
-        run: sudo lsof -t -i:80 | xargs -r kill
+
+
+      - name: Stop existing process on port 8080
+        run: sudo lsof -t -i:8080 | xargs -r kill
 
       - name: Run the JAR file
-        run: java -jar /home/runner/work/cross-that-zero_backend/cross-that-zero_backend/target/CrossThatZero-backend-0.0.1-SNAPSHOT.jar
+        run: java -jar /actions-runner/_work/cross-that-zero_backend/cross-that-zero_backend/target/CrossThatZero-backend-0.0.1-SNAPSHOT.jar
