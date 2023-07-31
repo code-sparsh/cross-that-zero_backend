@@ -15,7 +15,7 @@ public class SocketIOConfig {
 
         config.setHostname("localhost");
         config.setPort(9000);
-        config.setOrigin("http://localhost:3000");
+        config.setOrigin("*");
 
         // to prevent the error - "address already in use by some other server"
         SocketConfig socketConfig = new SocketConfig();
