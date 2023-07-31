@@ -37,4 +37,4 @@ jobs:
         run: mvn clean package -DskipTests
 
       - name: Run the JAR file
-        run: sudo lsof -t -i:8080 | xargs -r kill & sudo java -jar /home/ubuntu/actions-runner/_work/cross-that-zero_backend/cross-that-zero_backend/target/CrossThatZero-backend-0.0.1-SNAPSHOT.jar
+        run: lsof -t -i:8080 | xargs -r kill & java -jar /home/ubuntu/actions-runner/_work/cross-that-zero_backend/cross-that-zero_backend/target/CrossThatZero-backend-0.0.1-SNAPSHOT.jar
