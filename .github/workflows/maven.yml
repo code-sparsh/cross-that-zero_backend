@@ -15,7 +15,7 @@ on:
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
 
     steps:
     - uses: actions/checkout@v3
@@ -26,12 +26,7 @@ jobs:
         distribution: 'temurin'
         cache: maven
         
-    - name: Set Active Profile
-      run: sed -i 's/${PROFILE:dev}/prod/g' src/main/resources/application.properties
-        
     - name: Set environment variables
-      env:
-        PROFILE: prod
       run: |
         echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" >> $GITHUB_ENV
         echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> $GITHUB_ENV
