@@ -30,6 +30,8 @@ jobs:
       run: |
         echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" >> $GITHUB_ENV
         echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> $GITHUB_ENV
+        echo "PROFILE=${{ secrets.PROFILE }}" >> $GITHUB_ENV
+        
   
     - name: Build with Maven
       run: mvn -B package --file pom.xml
