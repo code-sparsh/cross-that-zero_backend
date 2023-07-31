@@ -44,7 +44,7 @@ public class SocketService {
             UUID sessionID = client.getSessionId();
             String userID = client.getHandshakeData().getSingleUrlParam("userID");
 
-            client.sendEvent("connected", "cconnected h vai");
+            client.sendEvent("connected", "coonnected h vai");
 
             List<Room> existingRoom = roomRepository.findRoomsByPlayerCountOne();
             if (existingRoom.size() != 0) {
