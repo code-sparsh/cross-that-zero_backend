@@ -26,6 +26,9 @@ jobs:
         distribution: 'temurin'
         cache: maven
         
+    - name: Set Active Profile
+      run: sed -i 's/${PROFILE:dev}/prod/g' src/main/resources/application.properties
+        
     - name: Set environment variables
       env:
         PROFILE: prod
