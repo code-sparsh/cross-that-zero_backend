@@ -27,6 +27,8 @@ jobs:
           cache: maven
 
       - name: Set environment variables
+        env:
+          PROFILE: prod
         run: |
           echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" >> $GITHUB_ENV
           echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> $GITHUB_ENV
@@ -40,4 +42,4 @@ jobs:
         run: sudo lsof -t -i:8080 | xargs -r kill
 
       - name: Run the JAR file
-        run: sudo -DPROFILE=prod java -jar /home/ubuntu/actions-runner/_work/cross-that-zero_backend/cross-that-zero_backend/target/CrossThatZero-backend-0.0.1-SNAPSHOT.jar
+        run: sudo java -jar /home/ubuntu/actions-runner/_work/cross-that-zero_backend/cross-that-zero_backend/target/CrossThatZero-backend-0.0.1-SNAPSHOT.jar
