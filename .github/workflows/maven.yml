@@ -15,7 +15,7 @@ on:
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-lat
 
     steps:
     - uses: actions/checkout@v3
@@ -27,6 +27,8 @@ jobs:
         cache: maven
         
     - name: Set environment variables
+      env:
+        PROFILE: prod
       run: |
         echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" >> $GITHUB_ENV
         echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> $GITHUB_ENV
