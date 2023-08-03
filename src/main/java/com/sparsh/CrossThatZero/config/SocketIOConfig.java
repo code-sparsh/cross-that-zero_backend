@@ -5,22 +5,29 @@ import com.corundumstudio.socketio.SocketIOServer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.io.InputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 
 @Configuration
 public class SocketIOConfig {
 
     @Bean
-    public SocketIOServer socketIOServer() {
+    public SocketIOServer socketIOServer() throws FileNotFoundException {
 
         com.corundumstudio.socketio.Configuration config = new com.corundumstudio.socketio.Configuration();
 
 //        config.setHostname("https://crossthatzero.netlify.app");
         config.setPort(9000);
         config.setOrigin("*");
-        InputStream keyStoreStream = SocketConfig.class.getResourceAsStream("/server.jks");
-        config.setKeyStore(keyStoreStream);
-        config.setKeyStorePassword("Internet1234");
+
+        File keyStore = new File("/home/ubuntu");
+        FileInputStream keyStoreStream;
+        if (keyStore.exists()) {
+            keyStoreStream = new FileInputStream(keyStore);
+            config.setKeyStore(keyStoreStream);
+            config.setKeyStorePassword("Internet1234");
+        }
 
 
         // to prevent the error - "address already in use by some other server"
