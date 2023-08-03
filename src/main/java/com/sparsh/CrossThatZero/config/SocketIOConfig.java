@@ -15,7 +15,7 @@ public class SocketIOConfig {
 
 //        config.setHostname("*");
         config.setPort(9000);
-        config.setOrigin("*");
+        config.setOrigin("https://crossthatzero.netlify.app");
 
         // to prevent the error - "address already in use by some other server"
         SocketConfig socketConfig = new SocketConfig();
