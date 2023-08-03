@@ -13,9 +13,10 @@ public class SocketIOConfig {
 
         com.corundumstudio.socketio.Configuration config = new com.corundumstudio.socketio.Configuration();
 
-        config.setHostname("https://crossthatzero.netlify.app");
+//        config.setHostname("https://crossthatzero.netlify.app");
         config.setPort(9000);
-        config.setOrigin("https://crossthatzero.netlify.app");
+        config.setOrigin("*");
+
 
         // to prevent the error - "address already in use by some other server"
         SocketConfig socketConfig = new SocketConfig();
