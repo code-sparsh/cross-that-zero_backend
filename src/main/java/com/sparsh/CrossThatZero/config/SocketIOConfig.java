@@ -20,6 +20,7 @@ public class SocketIOConfig {
         config.setOrigin("*");
         InputStream keyStoreStream = SocketConfig.class.getResourceAsStream("/server.jks");
         config.setKeyStore(keyStoreStream);
+        config.setKeyStorePassword("Internet1234");
 
 
         // to prevent the error - "address already in use by some other server"
