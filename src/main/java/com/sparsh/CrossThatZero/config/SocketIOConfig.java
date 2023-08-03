@@ -5,6 +5,8 @@ import com.corundumstudio.socketio.SocketIOServer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.io.InputStream;
+
 @Configuration
 public class SocketIOConfig {
 
@@ -16,6 +18,8 @@ public class SocketIOConfig {
 //        config.setHostname("https://crossthatzero.netlify.app");
         config.setPort(9000);
         config.setOrigin("*");
+        InputStream keyStoreStream = SocketConfig.class.getResourceAsStream("/server.jks");
+        config.setKeyStore(keyStoreStream);
 
 
         // to prevent the error - "address already in use by some other server"
