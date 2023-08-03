@@ -21,7 +21,7 @@ public class SocketIOConfig {
         config.setPort(9000);
         config.setOrigin("*");
 
-        File keyStore = new File("/home/ubuntu");
+        File keyStore = new File("/home/ubuntu/server.jks");
         FileInputStream keyStoreStream;
         if (keyStore.exists()) {
             keyStoreStream = new FileInputStream(keyStore);
