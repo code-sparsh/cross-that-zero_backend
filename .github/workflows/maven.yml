@@ -1,10 +1,3 @@
-# This workflow will build a Java project with Maven, and cache/restore any dependencies to improve the workflow execution time
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-maven
-
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
 
 name: Java CI with Maven
 
@@ -15,10 +8,12 @@ on:
 jobs:
   build:
 
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
+
       - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
@@ -26,16 +21,14 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      - name: Set environment variables
-        run: |
-          echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" >> $GITHUB_ENV
-          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> $GITHUB_ENV
 
       - name: Build with Maven
         run: mvn clean package -DskipTests
-        
-      - name: Stop existing process on port 8080
-        run: lsof -t -i:8080 | xargs -r kill
 
-      - name: Run the JAR file
-        run: nohup java -jar /home/ubuntu/actions-runner/_work/cross-that-zero_backend/cross-that-zero_backend/target/CrossThatZero-backend-0.0.1-SNAPSHOT.jar &
+      - name: Deploy to EC2
+
+        run: |
+          echo "PROFILE=${{ env.PROFILE }}"
+          echo "${{ secrets.EC2_SSH_KEY }}" > CrossThatZero.pem && chmod 600 CrossThatZero.pem
+          scp -o StrictHostKeyChecking=no -i CrossThatZero.pem target/CrossThatZero-backend-0.0.1-SNAPSHOT.jar ubuntu@3.129.125.64:/home/ubuntu/cross-that-zero_backend/target
+          ssh -o StrictHostKeyChecking=no -i CrossThatZero.pem ubuntu@3.129.125.64 "sudo lsof -t -i:8080 | xargs -r sudo kill -9 && nohup java -jar /home/ubuntu/cross-that-zero_backend/target/CrossThatZero-backend-0.0.1-SNAPSHOT.jar --DB_USERNAME=${{ secrets.DB_USERNAME }} --DB_PASSWORD=${{ secrets.DB_PASSWORD }} --PROFILE=prod &"
