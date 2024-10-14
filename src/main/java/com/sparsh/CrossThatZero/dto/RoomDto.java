@@ -1,6 +1,5 @@
 package com.sparsh.CrossThatZero.dto;
 
-import com.sparsh.CrossThatZero.model.Room;
 import lombok.*;
 
 @Getter
@@ -10,6 +9,7 @@ import lombok.*;
 @ToString
 public class RoomDto {
 
+    private String id;
     private String crossPlayer;
     private String zeroPlayer;
 

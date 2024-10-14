@@ -6,9 +6,10 @@ import com.corundumstudio.socketio.SocketIOServer;
 import com.corundumstudio.socketio.listener.DataListener;
 import com.sparsh.CrossThatZero.dto.*;
 import com.sparsh.CrossThatZero.model.Room;
+import com.sparsh.CrossThatZero.model.RoomStatus;
 import com.sparsh.CrossThatZero.repository.RoomRepository;
 import com.sparsh.CrossThatZero.service.GameValidatorService;
-import com.sparsh.CrossThatZero.service.SocketService;
+import com.sparsh.CrossThatZero.service.RedisService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -30,24 +31,30 @@ public class PlayerMoveEventListener implements DataListener<PlayerMoveDto> {
 
     @Autowired
     private GameValidatorService gameValidatorService;
+    @Autowired
+    private RedisService redisService;
 
     @Override
     public void onData(SocketIOClient client, PlayerMoveDto playerMoveDto, AckRequest ackRequest) throws Exception {
 
 
         UUID sessionId = client.getSessionId();
+        PlayerType playerType = null;
 
-        String roomName = SocketService.sessionIdMapRoomName.get(sessionId);
-        PlayerType playerType = SocketService.sessionIdMapPlayerType.get(sessionId);
-        System.out.println(playerType);
+        String username = redisService.get(sessionId.toString());
 
+        String roomID = redisService.get(username);
+        Optional<Room> room = roomRepository.findById(UUID.fromString(roomID));
 
-        Optional<Room> room = roomRepository.findById(UUID.fromString(roomName));
-
-        // can't do anything because assuming it to be false always
+        // shouldn't be empty
         if (room.isEmpty()) {
             return;
         }
+
+        if (room.get().getCrossPlayer().equals(username)) {
+            playerType = PlayerType.CROSS;
+        } else
+            playerType = PlayerType.ZERO;
 
 //        int[] array = Arrays.stream(matrix)
 //                .flatMapToInt(Arrays::stream)
@@ -62,37 +69,47 @@ public class PlayerMoveEventListener implements DataListener<PlayerMoveDto> {
         }
 
         // ensuring if the index is not already taken
-        if (board[move] == '-') {
-            if (playerType == PlayerType.ZERO)
-                board[move] = '0';
-
-            if (playerType == PlayerType.CROSS)
-                board[move] = 'X';
+        if (board[move] != '-') {
+            return;
         }
+
+        if (playerType == PlayerType.ZERO)
+            board[move] = '0';
+
+        if (playerType == PlayerType.CROSS)
+            board[move] = 'X';
         room.get().setBoard(board);
 
-        roomRepository.save(room.get());
+        Room updatedRoom = roomRepository.save(room.get());
 
         RoomDto roomDto = modelMapper.map(room, RoomDto.class);
 
-        socketIOServer.getRoomOperations(roomName).sendEvent("room", roomDto);
+        socketIOServer.getRoomOperations(roomID).sendEvent("room", roomDto);
+
+        WinnerType winner = null;
 
         // if cross wins
         if (gameValidatorService.isCrossWinner(board)) {
-            WinnerDto winnerDto = new WinnerDto(WinnerType.CROSS);
-            socketIOServer.getRoomOperations(roomName).sendEvent("winner", winnerDto);
+            winner = WinnerType.CROSS;
         }
 
         // if zero wins
         if (gameValidatorService.isZeroWinner(board)) {
-            WinnerDto winnerDto = new WinnerDto(WinnerType.ZERO);
-            socketIOServer.getRoomOperations(roomName).sendEvent("winner", winnerDto);
+            winner = WinnerType.ZERO;
         }
 
         // if it's a TIE
         if (gameValidatorService.isGameDone(board)) {
-            WinnerDto winnerDto = new WinnerDto(WinnerType.TIE);
-            socketIOServer.getRoomOperations(roomName).sendEvent("winner", winnerDto);
+            winner = WinnerType.TIE;
+        }
+
+        if (winner != null) {
+            WinnerDto winnerDto = new WinnerDto(winner);
+            socketIOServer.getRoomOperations(roomID).sendEvent("winner", winnerDto);
+
+            updatedRoom.setWinnerType(winner);
+            updatedRoom.setStatus(RoomStatus.COMPLETED);
+            roomRepository.save(updatedRoom);
         }
 
         System.out.println(playerMoveDto.getMove());

@@ -20,10 +20,7 @@ public class GameValidatorService {
         for (int i = 0; i < 3; i++) {
             System.arraycopy(boardArray, i * 3, board[i], 0, 3);
         }
-        if (checkRows(board, 'X') || checkColumns(board, 'X') || checkDiagonals(board, 'X')) {
-            return true;
-        }
-        return false;
+        return checkRows(board, 'X') || checkColumns(board, 'X') || checkDiagonals(board, 'X');
     }
 
     public boolean isZeroWinner(char[] boardArray) {
@@ -31,10 +28,7 @@ public class GameValidatorService {
         for (int i = 0; i < 3; i++) {
             System.arraycopy(boardArray, i * 3, board[i], 0, 3);
         }
-        if (checkRows(board, '0') || checkColumns(board, '0') || checkDiagonals(board, '0')) {
-            return true;
-        }
-        return false;
+        return checkRows(board, '0') || checkColumns(board, '0') || checkDiagonals(board, '0');
     }
 
 
@@ -43,8 +37,10 @@ public class GameValidatorService {
         for (int i = 0; i < 3; i++) {
             boolean check = true;
             for (int j = 0; j < 3; j++) {
-                if (board[i][j] != type)
+                if (board[i][j] != type) {
                     check = false;
+                    break;
+                }
             }
 
             if (check)
@@ -57,8 +53,10 @@ public class GameValidatorService {
         for (int i = 0; i < 3; i++) {
             boolean check = true;
             for (int j = 0; j < 3; j++) {
-                if (board[j][i] != type)
+                if (board[j][i] != type) {
                     check = false;
+                    break;
+                }
             }
             if (check)
                 return true;
@@ -71,11 +69,7 @@ public class GameValidatorService {
         if (board[0][0] == type && board[1][1] == type && board[2][2] == type)
             return true;
 
-        else if (board[0][2] == type && board[1][1] == type && board[2][0] == type)
-            return true;
-
-        else
-            return false;
+        else return board[0][2] == type && board[1][1] == type && board[2][0] == type;
     }
 }
 
