@@ -9,9 +9,9 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class WinnerDto implements RoomMessageDto {
+public class GameStatusDto implements RoomMessageDto {
 
+    private GameStatusType status;
     private String crossPlayer;
     private String zeroPlayer;
-    private WinnerType winner;
 }

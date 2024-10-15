@@ -15,10 +15,12 @@ public class QueuePlayer implements Serializable {
 
     private UUID sessionID;
     private String username;
+    private Room room;
 
-    public QueuePlayer(UUID sessionID, String username) {
+    public QueuePlayer(UUID sessionID, String username, Room room) {
         this.sessionID = sessionID;
         this.username = username;
+        this.room = room;
     }
 
     public QueuePlayer() {

@@ -7,6 +7,7 @@ import com.corundumstudio.socketio.listener.DataListener;
 import com.sparsh.CrossThatZero.dto.*;
 import com.sparsh.CrossThatZero.model.Room;
 import com.sparsh.CrossThatZero.model.RoomStatus;
+import com.sparsh.CrossThatZero.redis.RedisMessagePublisher;
 import com.sparsh.CrossThatZero.repository.RoomRepository;
 import com.sparsh.CrossThatZero.service.GameValidatorService;
 import com.sparsh.CrossThatZero.service.RedisService;
@@ -34,27 +35,26 @@ public class PlayerMoveEventListener implements DataListener<PlayerMoveDto> {
     @Autowired
     private RedisService redisService;
 
+    @Autowired
+    private RedisMessagePublisher redisMessagePublisher;
+
     @Override
     public void onData(SocketIOClient client, PlayerMoveDto playerMoveDto, AckRequest ackRequest) throws Exception {
 
 
         UUID sessionId = client.getSessionId();
-        PlayerType playerType = null;
+//        String username = redisService.get(sessionId.toString());
+//
+//        String roomID = redisService.get(username);
 
-        String username = redisService.get(sessionId.toString());
+        String roomID = redisService.get(sessionId.toString());
 
-        String roomID = redisService.get(username);
         Optional<Room> room = roomRepository.findById(UUID.fromString(roomID));
 
         // shouldn't be empty
         if (room.isEmpty()) {
             return;
         }
-
-        if (room.get().getCrossPlayer().equals(username)) {
-            playerType = PlayerType.CROSS;
-        } else
-            playerType = PlayerType.ZERO;
 
 //        int[] array = Arrays.stream(matrix)
 //                .flatMapToInt(Arrays::stream)
@@ -73,10 +73,10 @@ public class PlayerMoveEventListener implements DataListener<PlayerMoveDto> {
             return;
         }
 
-        if (playerType == PlayerType.ZERO)
+        if (playerMoveDto.getPlayerType() == PlayerType.ZERO)
             board[move] = '0';
 
-        if (playerType == PlayerType.CROSS)
+        if (playerMoveDto.getPlayerType() == PlayerType.CROSS)
             board[move] = 'X';
         room.get().setBoard(board);
 
@@ -84,7 +84,8 @@ public class PlayerMoveEventListener implements DataListener<PlayerMoveDto> {
 
         RoomDto roomDto = modelMapper.map(room, RoomDto.class);
 
-        socketIOServer.getRoomOperations(roomID).sendEvent("room", roomDto);
+//        socketIOServer.getRoomOperations(roomID).sendEvent("room", roomDto);
+        redisMessagePublisher.publish(roomID, roomDto);
 
         WinnerType winner = null;
 
@@ -104,9 +105,10 @@ public class PlayerMoveEventListener implements DataListener<PlayerMoveDto> {
         }
 
         if (winner != null) {
-            WinnerDto winnerDto = new WinnerDto(winner);
-            socketIOServer.getRoomOperations(roomID).sendEvent("winner", winnerDto);
+            WinnerDto winnerDto = new WinnerDto(room.get().getCrossPlayer(), room.get().getZeroPlayer(), winner);
+//            socketIOServer.getRoomOperations(roomID).sendEvent("winner", winnerDto);
 
+            redisMessagePublisher.publish(roomID, winnerDto);
             updatedRoom.setWinnerType(winner);
             updatedRoom.setStatus(RoomStatus.COMPLETED);
             roomRepository.save(updatedRoom);

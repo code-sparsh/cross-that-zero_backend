@@ -1,7 +1,10 @@
 package com.sparsh.CrossThatZero.model;
 
 import com.sparsh.CrossThatZero.dto.WinnerType;
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -15,7 +18,6 @@ import java.util.UUID;
 public class Room {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
     private String crossPlayer;
@@ -32,6 +34,7 @@ public class Room {
         this.crossPlayer = crossPlayer;
         this.zeroPlayer = zeroPlayer;
         this.status = RoomStatus.PARTIALLY_COMPLETED;
+        this.id = UUID.randomUUID();
     }
 
 }

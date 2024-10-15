@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 public class RedisService {
 
     private final String QUEUE_KEY = "player-queue";
+
     @Autowired
     private RedisTemplate redisTemplate;
 
@@ -27,5 +28,6 @@ public class RedisService {
     public String get(String key) {
         return (String) redisTemplate.opsForValue().get(key);
     }
+
 
 }

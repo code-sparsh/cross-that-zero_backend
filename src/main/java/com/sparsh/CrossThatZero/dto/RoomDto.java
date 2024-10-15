@@ -7,7 +7,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class RoomDto {
+public class RoomDto implements RoomMessageDto {
 
     private String id;
     private String crossPlayer;
