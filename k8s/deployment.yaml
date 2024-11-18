@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cross-that-zero
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: cross-that-zero
+  template:
+    metadata:
+      labels:
+        app: cross-that-zero
+    spec:
+      containers:
+        - name: cross-that-zero
+          image: sparshsethi15/cross-that-zero:latest
+          ports:
+            - containerPort: 8080
+            - containerPort: 9000
+          env:
+            - name: DB_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: cross-that-zero-configmap
+                  key: DB_URL
+
+            - name: DB_USERNAME
+              valueFrom:
+                configMapKeyRef:
+                  name: cross-that-zero-configmap
+                  key: DB_USERNAME
+
+            - name: REDIS_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: cross-that-zero-configmap
+                  key: REDIS_URL
+
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: cross-that-zero-secret
+                  key: DB_PASSWORD
+
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: cross-that-zero-secret
+                  key: REDIS_PASSWORD

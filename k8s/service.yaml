@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: cross-that-zero-svc
+spec:
+  type: LoadBalancer
+  selector:
+    app: cross-that-zero
+  ports:
+    - name: http
+      port: 80          # External port for HTTP traffic
+      targetPort: 8080
+
+    - name: socketio
+      port: 9000        # External port for Socket.IO traffic
+      targetPort: 9000   # Target port for Socket.IO server

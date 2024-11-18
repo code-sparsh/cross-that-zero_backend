@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cross-that-zero-configmap
+data:
+  DB_URL: "<url>"
+  DB_USERNAME: "<username>"
+  REDIS_URL: "<url>"
