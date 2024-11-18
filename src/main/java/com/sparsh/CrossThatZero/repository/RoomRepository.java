@@ -12,12 +12,7 @@ import java.util.UUID;
 @Repository
 public interface RoomRepository extends JpaRepository<Room, UUID> {
 
-//    @Query(value = "SELECT * FROM room WHERE player_count = 1", nativeQuery = true)
-//    List<Room> findRoomsByPlayerCountOne();
-
-    @Query(value = "SELECT * FROM room WHERE cross_player = :username OR zero_player = :username", nativeQuery = true)
+    @Query("SELECT r FROM Room r WHERE r.crossPlayer = :username OR r.zeroPlayer = :username")
     Room findRoomByUsername(@Param("username") String username);
-//
-//
 
 }
