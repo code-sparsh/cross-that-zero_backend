@@ -91,10 +91,6 @@ public class SocketService {
             RoomDto roomDto = modelMapper.map(room, RoomDto.class);
             GameStatusDto gameStatusDto = new GameStatusDto(GameStatusType.STARTED, roomDto.getCrossPlayer(), roomDto.getZeroPlayer());
 
-//            socketIOServer.getRoomOperations(room.getId().toString()).sendEvent("room", roomDto);
-            redisMessagePublisher.publish(room.getId().toString(), roomDto);
-            redisMessagePublisher.publish(room.getId().toString(), gameStatusDto);
-
             // mapping the sessionID with RoomID into redis key-value store
 //            redisService.put(existingPlayer.getSessionID().toString(), room.getId().toString());
             redisService.put(sessionId.toString(), room.getId().toString());
@@ -103,6 +99,10 @@ public class SocketService {
 //            redisService.put(existingPlayer.getSessionID().toString(), existingPlayer.getUsername());
 //            redisService.put(sessionId.toString(), username);
             redisService.put(username, sessionId.toString());
+
+//            socketIOServer.getRoomOperations(room.getId().toString()).sendEvent("room", roomDto);
+            redisMessagePublisher.publish(room.getId().toString(), roomDto);
+            redisMessagePublisher.publish(room.getId().toString(), gameStatusDto);
         });
 
         socketIOServer.addEventListener("playerMove", PlayerMoveDto.class, playerMoveEventListener);
