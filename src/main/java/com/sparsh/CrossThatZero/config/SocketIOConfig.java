@@ -17,7 +17,7 @@ public class SocketIOConfig {
 
         config.setHostname("0.0.0.0");
         config.setPort(9000);
-        config.setOrigin("*");
+        config.setOrigin("https://crossthatzero.sparshsethi.me");
 
 //        File keyStore = new File("/home/sparsh/server.jks");
 //        FileInputStream keyStoreStream;
